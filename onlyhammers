@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnlyHammers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: SHU Blue & White -->
+    <!-- Application Structure Plan: The application is designed as a dual-access portal. The default view is the "Public Access" area, presenting non-sensitive information in a clean, card-based layout for all cadets. A prominent "Leadership Portal" button triggers a password modal. Successful authentication hides the public view and reveals the "Leadership Section," which contains sensitive documents. This structure was chosen to securely partition information while maintaining a single, easy-to-navigate entry point, fulfilling the user's request for a public/private "storefront" model. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Public Documents (Schedules, Packing Lists) -> Goal: Inform -> Viz: Card-based links (HTML/Tailwind) -> Interaction: Click to navigate (simulated) -> Justification: Clear, accessible, and visually organized for general use.
+        - Report Info: Sensitive Documents (Rosters, OPORDs) -> Goal: Inform (Securely) -> Viz: Password modal gate (HTML/JS) followed by a separate card-based section -> Interaction: Enter password to reveal content -> Justification: Provides a necessary layer of access control for leadership-specific materials.
+        - Library/Method: Vanilla JS for password logic and DOM manipulation. Tailwind CSS for styling. No charts needed.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s ease;
+        }
+        .card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        body.unlocked {
+            background-color: #0c4a6e; /* deep sky-900 */
+        }
+        body.unlocked .unlocked-text-light {
+            color: #f0f9ff; /* sky-50 for readability */
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800 bg-sky-50">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-900">OnlyHammers 🔨</h1>
+            <button id="leadershipPortalBtn" class="bg-sky-800 text-white font-bold py-2 px-4 rounded-md hover:bg-sky-700 transition-colors">
+                Leadership Portal
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="mainContent" class="container mx-auto px-6 py-12">
+
+        <!-- Public Access Section -->
+        <section id="publicSection">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-2">Home of the Hammers</h2>
+                <p class="text-lg text-gray-600">Information and resources available to all Hammer Platoon cadets.</p>
+            </div>
+
+            <!-- Image Section -->
+            <div class="mb-12 flex justify-center">
+                <img src="https://i.imgur.com/SuBS8Xm.png" alt="Hammer Platoon" class="rounded-lg shadow-md max-h-[500px]">
+            </div>
+
+            <!-- Bulletin Section -->
+            <div class="mb-12 bg-sky-100 border-l-4 border-sky-500 text-sky-800 p-6 rounded-lg shadow-md">
+                <h3 class="font-bold text-2xl mb-3">📢 Platoon Bulletin</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>CONGRATS</strong> on the Great work this AFT Hammers. Way to nail it in 🔨🔨</li>
+                    <li><strong>Friday: Platoon Raid.</strong> <a href="https://docs.google.com/presentation/d/1aCU4PnWCI_mx7XFcvZIyknNe2f8ncSgw/edit" target="_blank" rel="noopener noreferrer" class="font-semibold text-sky-600 hover:underline">CONOP</a></li>
+                </ul>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card: Master Contact Roster -->
+                <div class="card bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="font-bold text-xl mb-3">📞 Master Contact Roster</h3>
+                    <p class="text-gray-600 mb-4">Squad Leaders: Ensure your cadets have updated their info in the roster.</p>
+                    <a href="https://docs.google.com/spreadsheets/d/1OIyRFuwqYYrSeryCZTyRFjvT9tn30OE_Ia6a03DKoyk/edit?gid=1762750955#gid=1762750955" target="_blank" rel="noopener noreferrer" class="font-semibold text-sky-700 hover:underline">View Roster &rarr;</a>
+                </div>
+                <!-- Card: Hammer of the Week -->
+                <div class="card bg-white p-6 rounded-xl shadow-lg">
+                    <img src="https://i.imgur.com/SNiLOxG.jpeg" alt="Hammer of the Week Patch" class="w-20 h-20 rounded-full float-right ml-4">
+                    <h3 class="font-bold text-xl mb-3">🏆 Hammer of the Week</h3>
+                    <p class="text-gray-600 mb-4">Submit your nominations for the cadet who went above and beyond.</p>
+                    <a href="#" class="font-semibold text-sky-700 hover:underline">Submit Nomination &rarr;</a>
+                </div>
+                 <!-- Card: Feedback & Suggestions -->
+                 <div class="card bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="font-bold text-xl mb-3">📝 Feedback & Suggestions</h3>
+                    <p class="text-gray-600 mb-4">Share anonymous feedback or suggestions to improve the platoon.</p>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfqaOYxOimCB2mwTfipDLKE9TJWMm4YHdQ4MMalvXyiydQOTA/viewform?usp=header" target="_blank" rel="noopener noreferrer" class="font-semibold text-sky-700 hover:underline">Leave Feedback &rarr;</a>
+                </div>
+                <!-- Card: Schedule Submission -->
+                <div class="card bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="font-bold text-xl mb-3">📅 Schedule Submission</h3>
+                    <p class="text-gray-600 mb-4">Upload your class and work schedules using this form.</p>
+                    <a href="https://docs.google.com/forms/d/15coJqg6K3bcY4uPCZiQo6JLhAI2FcdXbVa_biLLNzmc/viewform" target="_blank" rel="noopener noreferrer" class="font-semibold text-sky-700 hover:underline">Open Submission Form &rarr;</a>
+                </div>
+                <!-- Card: Hammer Evaluation Report -->
+                <div class="card bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="font-bold text-xl mb-3">🧑‍🏫 Hammer Evaluation Report</h3>
+                    <p class="text-gray-600 mb-4">Gather the required data before your counseling and be ready to sit with your leadership!</p>
+                    <a href="https://drive.google.com/file/d/1YgdhF0bYaQhSb9q-mNdV-zT13zDeOgAR/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="font-semibold text-sky-700 hover:underline">Download Blank Form &rarr;</a>
+                </div>
+                <!-- Card: Hammer Tactics Channel -->
+                <div class="card bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="font-bold text-xl mb-3">🎬 Hammer Tactics Channel</h3>
+                    <p class="text-gray-600 mb-4">Tune in to Hammer 6 and 7 giving the lowdown on how to rep it out at lab!</p>
+
+                    <a href="https://www.youtube.com/watch?v=cNScHrHYVHk" target="_blank" rel="noopener noreferrer" class="font-semibold text-sky-700 hover:underline">Go to Channel &rarr;</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Leadership Section (Hidden by default) -->
+        <section id="leadershipSection" class="hidden">
+            <div class="flex justify-between items-center mb-12">
+                <div class="text-left">
+                    <h2 class="text-4xl font-bold text-sky-200 mb-2 unlocked-text-light">Leadership Access Portal</h2>
+                    <p class="text-lg text-gray-300 unlocked-text-light">CONFIDENTIAL: For platoon leadership use only.</p>
+                </div>
+                <button id="logoutBtn" class="bg-sky-200 text-sky-800 font-bold py-2 px-4 rounded-md hover:bg-sky-300 transition-colors">
+                    &larr; Back to Public View
+                </button>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card: 2025 PT Plan -->
+                <div class="card bg-white p-6 rounded-xl shadow-lg border-t-4 border-sky-400">
+                    <h3 class="font-bold text-xl mb-3">📈 2025 PT Plan</h3>
+                    <p class="text-gray-600 mb-4">Review the comprehensive physical training plan and performance trackers.</p>
+                    <a href="https... existing code ...<" target="_blank" rel="noopener noreferrer" class="font-semibold text-sky-700 hover:underline">Open PT Plan &rarr;</a>
+                </div>
+                <!-- Card: Schedule Bin -->
+                <div class="card bg-white p-6 rounded-xl shadow-lg border-t-4 border-sky-400">
+                    <h3 class="font-bold text-xl mb-3">📅 Schedule Bin</h3>
+                    <p class="text-gray-600 mb-4">Access the central repository for all operational and training schedules.</p>
+                    <a href="https... existing code ...<" target="_blank" rel="noopener noreferrer" class="font-semibold text-sky-700 hover:underline">Open Schedule Bin &rarr;</a>
+                </div>
+                <!-- Card: Master Leadership Drive -->
+                <div class="card bg-white p-6 rounded-xl shadow-lg border-t-4 border-sky-400">
+                    <h3 class="font-bold text-xl mb-3">🗂️ Master Leadership Drive</h3>
+                    <p class="text-gray-600 mb-4">Access all private platoon files, including counselings and cadet records.</p>
+                    <a href="https... existing code ...<" target="_blank" rel="noopener noreferrer" class="font-semibold text-sky-700 hover:underline">Open Master Drive &rarr;</a>
+                </div>
+                <!-- Card: HOTW Submissions -->
+                <div class="card bg-white p-6 rounded-xl shadow-lg border-t-4 border-sky-400">
+                    <h3 class="font-bold text-xl mb-3">🏆 HOTW Submissions</h3>
+                    <p class="text-gray-600 mb-4">Review all Hammer of the Week nominations.</p>
+                    <a href="httpsD... existing code ...<" target="_blank" rel="noopener noreferrer" class="font-semibold text-sky-700 hover:underline">View Submissions &rarr;</a>
+                </div>
+                <!-- Card: Feedback Submissions -->
+                <div class="card bg-white p-6 rounded-xl shadow-lg border-t-4 border-sky-400">
+                    <h3 class="font-bold text-xl mb-3">📝 Feedback Submissions</h3>
+                    <p class="text-gray-600 mb-4">Read and analyze all anonymous feedback from the platoon.</p>
+                    <a href="https... existing code ...<" target="_blank" rel="noopener noreferrer" class="font-semibold text-sky-700 hover:underline">View Feedback &rarr;</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden opacity-0">
+        <div class="bg-white rounded-lg shadow-2xl p-8 w-full max-w-sm">
+            <h2 class="text-2xl font-bold mb-4">Leadership Access</h2>
+            <p class="text-gray-600 mb-6">Please enter the password to access the leadership portal.</p>
+            <div class="space-y-4">
+                <input type="password" id="passwordInput" placeholder="Password" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500">
+                <p id="errorMessage" class="text-red-500 text-sm hidden">Incorrect password. Please try again.</p>
+                <div class="flex items-center space-x-4">
+                    <button id="submitPasswordBtn" class="w-full bg-sky-800 text-white font-bold py-2 px-4 rounded-md hover:bg-sky-700 transition-colors">Submit</button>
+                    <button id="cancelModalBtn" class="w-full bg-sky-100 text-sky-800 font-bold py-2 px-4 rounded-md hover:bg-sky-200 transition-colors">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const leadershipPortalBtn = document.getElementById('leadershipPortalBtn');
+            const passwordModal = document.getElementById('passwordModal');
+            const cancelModalBtn = document.getElementById('cancelModalBtn');
+            const submitPasswordBtn = document.getElementById('submitPasswordBtn');
+            const passwordInput = document.getElementById('passwordInput');
+            const errorMessage = document.getElementById('errorMessage');
+            const publicSection = document.getElementById('publicSection');
+            const leadershipSection = document.getElementById('leadershipSection');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            // NOTE: In a real application, a password should never be hardcoded like this.
+            const LEADERSHIP_PASSWORD = 'Hammers1776';
+
+            function showModal() {
+                passwordModal.classList.remove('hidden');
+                setTimeout(() => passwordModal.classList.remove('opacity-0'), 10);
+            }
+
+            function hideModal() {
+                passwordModal.classList.add('opacity-0');
+                setTimeout(() => {
+                    passwordModal.classList.add('hidden');
+                    passwordInput.value = '';
+                    errorMessage.classList.add('hidden');
+                }, 300);
+            }
+            
+            function login() {
+                if (passwordInput.value === LEADERSHIP_PASSWORD) {
+                    hideModal();
+                    publicSection.classList.add('hidden');
+                    leadershipSection.classList.remove('hidden');
+                    leadershipPortalBtn.classList.add('hidden');
+                    document.body.classList.add('unlocked');
+                } else {
+                    errorMessage.classList.remove('hidden');
+                    passwordInput.focus();
+                }
+            }
+            
+            function logout() {
+                publicSection.classList.remove('hidden');
+                leadershipSection.classList.add('hidden');
+                leadershipPortalBtn.classList.remove('hidden');
+                document.body.classList.remove('unlocked');
+            }
+
+            leadershipPortalBtn.addEventListener('click', showModal);
+            cancelModalBtn.addEventListener('click', hideModal);
+            submitPasswordBtn.addEventListener('click', login);
+            logoutBtn.addEventListener('click', logout);
+            
+            passwordInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+            
+            passwordModal.addEventListener('click', (e) => {
+                if (e.target === passwordModal) {
+                    hideModal();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
+
+
